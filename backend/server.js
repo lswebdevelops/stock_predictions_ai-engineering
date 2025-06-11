@@ -28,7 +28,8 @@ app.post('/api/openai/chat', async (req, res) => {
       messages: [
         { role: 'system', content: 'You are a humorous stock market analyst.' },
         { role: 'user', content: prompt }
-      ]
+      ],
+      max_tokens: 16
     });
 
     const report = completion.choices[0].message.content;
