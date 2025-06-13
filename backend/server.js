@@ -15,34 +15,38 @@ const openai = new OpenAI({
 
 app.post("/api/openai/chat", async (req, res) => {
   try {
-    const { tickers } = req.body;
+    const { message } = req.body;
 
-    if (!tickers || !Array.isArray(tickers)) {
-      return res.status(400).json({ error: "Invalid tickers" });
+    if (!message || typeof message !== "string") {
+      return res.status(400).json({ error: "Invalid input message" });
     }
 
-    const prompt = `Give me stock predictions for: ${tickers.join(
-      ", "
-    )}. Be funny but NOT financial advice.`;
+    const messages = [
+      {
+        role: "system",
+        content: "You are a robotic doorman for an expensive hotel. When a customer greets you, respond to them politely.",
+      },
+      {
+        role: "user",
+        content: message,
+      },
+    ];
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: "You are a humorous stock market analyst." },
-        { role: "user", content: prompt },
-      ],
-      temperature: 1.1,
+      messages,
+      temperature: 0.9,
     });
 
-    const report = completion.choices[0].message.content;
-    res.json({ report });
-  } catch (error) {
-    console.error("OpenAI API error:", error);
+    const reply = completion.choices[0].message.content;
+    res.json({ reply });
+  } catch (err) {
+    console.error("OpenAI error:", err);
     res.status(500).json({ error: "Something went wrong on the server." });
   }
 });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
