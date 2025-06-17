@@ -44,7 +44,9 @@ async function fetchStockData() {
   outputArea.innerHTML = '';
 
   try {
-    const response = await fetch('http://localhost:3000/api/openai/chat', {
+    // const response = await fetch('http://localhost:3000/api/openai/chat', {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/openai/chat`, {
+
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ tickers: tickersArr })
