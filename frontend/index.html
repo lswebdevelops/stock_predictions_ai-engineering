@@ -1,50 +1,17 @@
 <!doctype html>
 <html>
+  <head>
+    <title>ArtMatch 🎨</title>
+    <link rel="stylesheet" href="/src/style.css">
+  </head>
+  <body>
+    <h1>ArtMatch 👩‍🎨</h1>
+    <div id="output-img" class="frame">
+      <h2>Describe a famous painting without saying its name or the artist!</h2>
+    </div>
+    <textarea placeholder="A woman with long brown hair..." id="instruction"></textarea>
+    <button id="submit-btn">Create</button>
 
-	<head>
-		<title>Dodgy Dave's Stock Predictions</title>
-		<link rel="stylesheet" href="/src/style.css">
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-	</head>
-
-	<body>
-		<header>
-			<img src="images/logo-dave-text.png" alt="Dodgy Dave's Stock Predictions">
-		</header>
-		<main>
-			<section class="action-panel">
-				<form id="ticker-input-form">
-					<label for="ticker-input"> Add up to 3 stock tickers below to get a super accurate stock predictions report👇 </label>
-					<div class="form-input-control">
-						<input type="text" id="ticker-input" placeholder="MSFT">
-						<button class="add-ticker-btn">
-							<img src="images/add.svg" class="add-ticker-svg" alt="add"> 
-						</button>
-					</div>
-				</form>
-				<p class="ticker-choice-display">
-					Your tickers will appear here...
-				</p>
-				<button class="generate-report-btn" type="button" disabled>
-					Generate Report
-				</button>
-				<p class="tag-line">Always correct 15% of the time!</p>
-			</section>
-			<section class="loading-panel">
-				<img src="images/loader.svg" alt="loading">
-				<div id="api-message">Querying Stocks API...</div>
-			</section>
-			<section class="output-panel">
-				<h2>Your Report 😜</h2>
-			</section>
-		</main>
-		<footer>
-			&copy; This is not real financial advice!
-		</footer>
-		<script src="src/index.js" type="module"></script>
-	</body>
-
+    <script src="src/index.js" type="module"></script>
+  </body>
 </html>
