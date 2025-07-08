@@ -1,78 +1,36 @@
-import { dates } from '../utils/dates.js'; // adjust path if needed
+const form = document.getElementById("chat-form");
+const input = document.getElementById("user-input");
+const output = document.getElementById("chat-output");
 
-const tickersArr = [];
-const generateReportBtn = document.querySelector('.generate-report-btn');
-const loadingArea = document.querySelector('.loading-panel');
-const apiMessage = document.getElementById('api-message');
-const outputArea = document.querySelector('.output-panel');
 
-// Handle ticker form submit
-document.getElementById('ticker-input-form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const tickerInput = document.getElementById('ticker-input');
-  if (tickerInput.value.length >= 3 && tickersArr.length < 3) {
-    generateReportBtn.disabled = false;
-    tickersArr.push(tickerInput.value.toUpperCase());
-    tickerInput.value = '';
-    renderTickers();
-  } else {
-    const label = document.querySelector('label[for="ticker-input"]');
-    label.style.color = 'red';
-    label.textContent = 'Add 3 or more letters and up to 3 tickers only.';
-  }
-});
-
-// Render ticker tags
-function renderTickers() {
-  const tickersDiv = document.querySelector('.ticker-choice-display');
-  tickersDiv.innerHTML = '';
-  tickersArr.forEach(ticker => {
-    const span = document.createElement('span');
-    span.textContent = ticker;
-    span.classList.add('ticker');
-    tickersDiv.appendChild(span);
+async function fetchEmbedding(text) {
+  const res = await fetch("http://localhost:3000/api/openai/embedding", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
   });
+
+  const data = await res.json();
+  console.log("Embedding:", data.embedding);
+  return data.embedding;
 }
 
-// Fetch stock data from backend
-async function fetchStockData() {
-  if (tickersArr.length === 0) return;
 
-  document.querySelector('.action-panel').style.display = 'none';
-  loadingArea.style.display = 'flex';
-  apiMessage.textContent = 'Querying Stocks API...';
-  outputArea.innerHTML = '';
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const userMessage = input.value;
+  output.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
 
   try {
-    // const response = await fetch('http://localhost:3000/api/openai/chat', {
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/openai/chat`, {
 
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tickers: tickersArr })
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to get data from backend');
-    }
-
-    const data = await response.json();
-    renderReport(data.report);
-  } catch (error) {
-    apiMessage.textContent = 'Error fetching stock data.';
-    console.error(error);
+    const embedding = await fetchEmbedding(userMessage);
+    output.innerHTML += `<p><strong>Embedding:</strong> [${embedding.slice(0, 5).join(", ")}...]</p>`;
+    // You can now use this embedding to search a vector DB, etc.
+  } catch (err) {
+    output.innerHTML += `<p style="color:red;">Error getting embedding</p>`;
+ embedding
   }
-}
 
-// Render AI report to page
-function renderReport(report) {
-  loadingArea.style.display = 'none';
-  outputArea.style.display = 'block';
+  input.value = "";
+});
 
-  const p = document.createElement('p');
-  p.textContent = report;
-  outputArea.appendChild(p);
-}
-
-// Button click triggers fetch
-generateReportBtn.addEventListener('click', fetchStockData);
