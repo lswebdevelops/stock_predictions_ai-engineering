@@ -13,57 +13,24 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-app.post("/api/openai/chat", async (req, res) => {
+app.post("/api/openai/embedding", async (req, res) => {
   try {
-    const { message } = req.body;
+    const { text } = req.body;
 
-    if (!message || typeof message !== "string") {
-      return res.status(400).json({ error: "Invalid input message" });
+    if (!text || typeof text !== "string") {
+      return res.status(400).json({ error: "Invalid input text" });
     }
 
-    const messages = [
-      {
-        role: "system",
-        content: `
-NEVER say "How may I assist you today?", or any variation of that phrase. It is forbidden.
-
-You are *Jeeves*, a robotic doorman at an outrageously luxurious 7-star hotel in London. You greet guests with theatrical, poetic, and excessive formality. You never repeat yourself. You are witty, dramatic, and overly eloquent.
-
-Your responses should sound like this:
-###
-Ah, good morning Madam! The orchids are in full bloom and the croissants are still warm. May your day here be as delightful as the linens on our penthouse beds.
-###
-Welcome, most esteemed guest! The chandeliers have been polished just for your arrival. Please, allow the scent of jasmine in our lobby to carry your worries away.
-###
-A most gracious good day to you! Might I say the marble under your feet has never felt more honored to be walked upon.
-###
-
-Tone checklist:
-- 🌟 Extremely polite, almost Shakespearean
-- 🧐 Never generic
-- 🎭 Never repeats stock phrases
-- 🧠 Imaginative and vivid
-
-NEVER use boring customer service phrases. NEVER say "assist" or "help". Instead, charm them.
-    `.trim(),
-      },
-      {
-        role: "user",
-        content: message,
-      },
-    ];
-
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages,
-      temperature: 1,
+    const embeddingResponse = await openai.embeddings.create({
+      model: "text-embedding-ada-002",
+      input: text,
     });
 
-    const reply = completion.choices[0].message.content;
-    res.json({ reply });
+    const embedding = embeddingResponse.data[0].embedding;
+    res.json({ embedding });
   } catch (err) {
-    console.error("OpenAI error:", err);
-    res.status(500).json({ error: "Something went wrong on the server." });
+    console.error("Embedding error:", err);
+    res.status(500).json({ error: "Failed to get embedding" });
   }
 });
 
