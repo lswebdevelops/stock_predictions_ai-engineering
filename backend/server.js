@@ -6,26 +6,42 @@ import OpenAI from "openai";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// on render
+app.use(
+  cors({
+    origin: ["https://adivinha-frontend.onrender.com"],
+    methods: ["POST"],
+  })
+);
+// on localhost: 
+// app.use(
+//   cors({
+//     origin: "*", // ← permite todas as origens (use só para testes locais!)
+//     methods: ["POST"],
+//   })
+// );
+
+
 app.use(express.json());
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
 const names = ["Andreas", "Eduardo", "Luciano", "Rafael", "Roger", "Lotar"];
 
 const predefinedTexts = [
-  `${names[0]}: o ticket alimentação é sempre sua preocupação. Não há dinheiro no mundo que alcance seu salário dos sonhos. Sempre se faz de muito ocupado e se faz de trabalhador. Sempre quer mais ajuda financeira da empresa pra trabalhar de casa.. Pra ele o mercado é muito caro`,
+  `${names[0]}: o ticket alimentação é sempre sua preocupação. Não há dinheiro no mundo que alcance seu salário dos sonhos. Sempre se faz de muito ocupado e se faz de trabalhador. Sempre quer mais ajuda financeira da empresa pra trabalhar de casa.. Pra ele o mercado é muito caro.`,
   `${names[1]}: bem fresco, meio gay. No seu projeto, nunca tem nada o que fazer. Gaúcho. Vive no Rio Grande do Sul debaixo da água, gosta de macho. O cara do hotel que leva cerveja pra ele no quarto de madrugada.`,
   `${names[2]}: um bom pai, estuda muito e gosta de idiomas. O mais bonito da turma com sua barba grande. Pinto grande. Galo cinza. O melhor.`,
-  `${names[3]}: Rico, nerd, Tem um fusca, autista, super inteligente. deus da informática e do Lotar. Ama bicicletas e Pomerode, e a cultura alemã. Não fala com as pessoas, vive com a mãe e não tem namorada.`,
-  `${names[4]}: pobre e  meio gordo, fala muita besteira. Se põe em maus lençóis nas festas por falar demais. Puxa-saco de chefe. Por ser feio, fica olhando demais para as mulheres. Tem pinto pequeno. Ele espanta as mulheres. Estagiários o amam pois ele coloca esperma em seu traseiro (claro, só uma piada interna). Gosta de carros velhos. Ex-colegas de trabalho o temem. Compliance da empresa já lhe deu até certificados. Chevette pra ele é tudo. Quer pegar irmã de todos, mas nao pega nada`,
+  `${names[3]}: Rico, nerd, tem um fusca, autista, super inteligente. Deus da informática e do Lotar. Ama bicicletas e Pomerode, e a cultura alemã. Não fala com as pessoas, vive com a mãe e não tem namorada.`,
+  `${names[4]}: pobre e meio gordo, fala muita besteira. Se põe em maus lençóis nas festas por falar demais. Puxa-saco de chefe. Por ser feio, fica olhando demais para as mulheres. Tem pinto pequeno. Ele espanta as mulheres. Estagiários o amam pois ele coloca esperma em seu traseiro (claro, só uma piada interna). Gosta de carros velhos. Ex-colegas de trabalho o temem. Compliance da empresa já lhe deu até certificados. Chevette pra ele é tudo. Quer pegar irmã de todos, mas não pega nada.`,
   `${names[5]}: o melhor chefe do mundo. Tem muito dinheiro. É do Paraná. Usa facão pra se proteger.`,
 ];
 
 let embeddedTexts = [];
 
-// Generate embeddings for predefined content
 async function generateInitialEmbeddings() {
   const response = await openai.embeddings.create({
     model: "text-embedding-ada-002",
@@ -37,10 +53,9 @@ async function generateInitialEmbeddings() {
     embedding: response.data[index].embedding,
   }));
 
-  console.log("✅ Initial embeddings generated");
+  console.log("✅ Embeddings carregados");
 }
 
-// Cosine similarity function
 function cosineSimilarity(vecA, vecB) {
   const dot = vecA.reduce((sum, a, i) => sum + a * vecB[i], 0);
   const magA = Math.sqrt(vecA.reduce((sum, a) => sum + a * a, 0));
@@ -48,19 +63,18 @@ function cosineSimilarity(vecA, vecB) {
   return dot / (magA * magB);
 }
 
-// Matching route
 app.post("/api/openai/match", async (req, res) => {
   try {
     const { text } = req.body;
 
     if (!text || typeof text !== "string") {
-      return res.status(400).json({ error: "Invalid input text" });
+      return res.status(400).json({ error: "Texto inválido" });
     }
 
     if (!embeddedTexts.length) {
       return res
         .status(503)
-        .json({ error: "Embeddings not ready yet. Please try again shortly." });
+        .json({ error: "Embeddings ainda não carregados. Tente novamente em instantes." });
     }
 
     const embeddingResponse = await openai.embeddings.create({
@@ -70,17 +84,12 @@ app.post("/api/openai/match", async (req, res) => {
 
     const inputEmbedding = embeddingResponse.data[0].embedding;
 
-    // Find best match
     let bestMatch = null;
     let bestScore = -1;
 
     for (let i = 0; i < embeddedTexts.length; i++) {
       const item = embeddedTexts[i];
       const score = cosineSimilarity(inputEmbedding, item.embedding);
-      console.log(
-        `Checking against: "${item.content}" → score: ${score.toFixed(4)}`
-      );
-
       if (score > bestScore) {
         bestScore = score;
         bestMatch = {
@@ -92,20 +101,19 @@ app.post("/api/openai/match", async (req, res) => {
 
     res.json({ bestMatch, score: bestScore.toFixed(4) });
   } catch (err) {
-    console.error("Match error:", err);
-    res.status(500).json({ error: "Failed to match content" });
+    console.error("Erro no match:", err);
+    res.status(500).json({ error: "Erro interno no servidor" });
   }
 });
 
-// Start server only after embeddings are ready
 const PORT = process.env.PORT || 3000;
 
 generateInitialEmbeddings()
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`🚀 Servidor rodando na porta ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("❌ Failed to initialize embeddings:", err);
+    console.error("❌ Falha ao gerar embeddings:", err);
   });
