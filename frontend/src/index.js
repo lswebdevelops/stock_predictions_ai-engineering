@@ -22,13 +22,19 @@ form.addEventListener("submit", async (e) => {
   output.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
 
   try {
-    const embedding = await fetchEmbedding(userMessage);
-    output.innerHTML += `<p><strong>Embedding:</strong> [${embedding.slice(0, 5).join(", ")}...]</p>`;
-    // You can now use this embedding to search a vector DB, etc.
+    const res = await fetch("http://localhost:3000/api/openai/match", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: userMessage }),
+    });
+
+    const data = await res.json();
+
+    output.innerHTML += `<p><strong>Closest match:</strong> ${data.bestMatch}</p>`;
+    output.innerHTML += `<p><strong>Score:</strong> ${data.score}</p>`;
   } catch (err) {
-    output.innerHTML += `<p style="color:red;">Error getting embedding</p>`;
+    output.innerHTML += `<p style="color:red;">Error matching content</p>`;
   }
 
   input.value = "";
 });
-
