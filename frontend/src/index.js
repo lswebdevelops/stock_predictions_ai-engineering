@@ -19,7 +19,6 @@ async function fetchEmbedding(text) {
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const userMessage = input.value;
-  output.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
 
   try {
     const res = await fetch("http://localhost:3000/api/openai/match", {
@@ -30,10 +29,20 @@ form.addEventListener("submit", async (e) => {
 
     const data = await res.json();
 
-    output.innerHTML += `<p><strong>Closest match:</strong> ${data.bestMatch}</p>`;
-    output.innerHTML += `<p><strong>Score:</strong> ${data.score}</p>`;
+    output.innerHTML = `
+    <p><strong>Top Match:</strong> ${data.bestMatch.name}</p>
+      <p><strong>Similarity:</strong> ${data.score}</p>
+    `;
+
+    //
+//     output.innerHTML = `
+//     <p><strong>Top Match:</strong> ${data.bestMatch.name}</p>
+// <p><strong>Description:</strong> ${data.bestMatch.content}</p>
+// <p><strong>Similarity:</strong> ${data.score}</p>
+//     `;
+    //
   } catch (err) {
-    output.innerHTML += `<p style="color:red;">Error matching content</p>`;
+    output.innerHTML = `<p style="color:red;">Error getting match</p>`;
   }
 
   input.value = "";
