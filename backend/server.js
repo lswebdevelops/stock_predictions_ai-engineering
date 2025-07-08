@@ -33,15 +33,16 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-const names = ["Andreas", "Eduardo", "Luciano", "Rafael", "Roger", "Lotar"];
+const names = ["Andreas", "Eduardo", "Luciano", "Rafael", "Roger", "Lotar", "Alguem que não está aqui"];
 
 const predefinedTexts = [
   `${names[0]}: o ticket alimentação é sempre sua preocupação. Não há dinheiro no mundo que alcance seu salário dos sonhos. Sempre se faz de muito ocupado e se faz de trabalhador. Sempre quer mais ajuda financeira da empresa pra trabalhar de casa.. Pra ele o mercado é muito caro.`,
   `${names[1]}: bem fresco, meio gay. No seu projeto, nunca tem nada o que fazer. Gaúcho. Vive no Rio Grande do Sul debaixo da água, gosta de macho. O cara do hotel que leva cerveja pra ele no quarto de madrugada.`,
-  `${names[2]}: um bom pai, estuda muito e gosta de idiomas. O mais bonito da turma com sua barba grande. Pinto grande. Galo cinza. O melhor.`,
-  `${names[3]}: Rico, nerd, tem um fusca, autista, super inteligente. Deus da informática e do Lotar. Ama bicicletas e Pomerode, e a cultura alemã. Não fala com as pessoas, vive com a mãe e não tem namorada.`,
+  `${names[2]}: um bom pai,é fit e magro, e vai pra academia, estuda muito e gosta de idiomas. O mais bonito da turma com sua barba grande. Pinto grande. Galo cinza. O melhor.`,
+  `${names[3]}: Rico, nerd, é fit e magro, tem um fusca, autista, super inteligente. Deus da informática e do Lotar. Ama bicicletas e Pomerode, e a cultura alemã. Não fala com as pessoas, vive com a mãe e não tem namorada.`,
   `${names[4]}: pobre e meio gordo, fala muita besteira. Se põe em maus lençóis nas festas por falar demais. Puxa-saco de chefe. Por ser feio, fica olhando demais para as mulheres. Tem pinto pequeno. Ele espanta as mulheres. Estagiários o amam pois ele coloca esperma em seu traseiro (claro, só uma piada interna). Gosta de carros velhos. Ex-colegas de trabalho o temem. Compliance da empresa já lhe deu até certificados. Chevette pra ele é tudo. Quer pegar irmã de todos, mas não pega nada.`,
   `${names[5]}: o melhor chefe do mundo. Tem muito dinheiro. É do Paraná. Usa facão pra se proteger.`,
+  `${names[6]}: o pior chefe do mundo,`,
 ];
 
 let embeddedTexts = [];

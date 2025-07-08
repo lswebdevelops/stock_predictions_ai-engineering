@@ -29,3 +29,12 @@ app.use(
 //   })
 // );
 
+
+to access
+https://guess-who-dor0.onrender.com
+
+tested on the terminal: 
+$ curl -X POST https://adivinha-quem.onrender.com/api/openai/match \
+  -H "Content-Type: application/json" \
+  -d '{"text":"test"}'
+{"bestMatch":{"name":"###","content":"####eas: o ti###o caro"},"score":"0.7485"}
