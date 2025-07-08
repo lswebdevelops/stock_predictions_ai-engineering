@@ -10,10 +10,14 @@ const app = express();
 // on render
 app.use(
   cors({
-    origin: ["https://adivinha-frontend.onrender.com"],
+    origin: [
+      "https://adivinha-frontend.onrender.com", 
+      "https://guess-who-dor0.onrender.com"
+    ],
     methods: ["POST"],
   })
 );
+
 // on localhost: 
 // app.use(
 //   cors({
