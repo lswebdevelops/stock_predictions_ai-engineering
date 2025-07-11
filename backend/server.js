@@ -2,29 +2,30 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import OpenAI from "openai";
-
+import podcasts from './content.js';
+import { openai, supabase } from './config.js';
 dotenv.config();
 
 const app = express();
 
 // on render
-app.use(
-  cors({
-    origin: [
-      "https://adivinha-frontend.onrender.com", 
-      "https://guess-who-dor0.onrender.com"
-    ],
-    methods: ["POST"],
-  })
-);
-
-// on localhost: 
 // app.use(
 //   cors({
-//     origin: "*", // ← permite todas as origens (use só para testes locais!)
+//     origin: [
+//       "https://adivinha-frontend.onrender.com", 
+//       "https://guess-who-dor0.onrender.com"
+//     ],
 //     methods: ["POST"],
 //   })
 // );
+
+// on localhost: 
+app.use(
+  cors({
+    origin: "*", // ← permite todas as origens (use só para testes locais!)
+    methods: ["POST"],
+  })
+);
 
 
 app.use(express.json());
